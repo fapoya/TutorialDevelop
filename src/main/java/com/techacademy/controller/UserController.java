@@ -4,6 +4,8 @@ import java.util.Set;//追加３
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;//追加４
+import org.springframework.validation.annotation.Validated;//追加４
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable; // 追加
@@ -39,33 +41,48 @@ public class UserController {
         return "user/register";
     }
 
+    //----------変更４ここから----------
     /** User登録処理 */
     @PostMapping("/register")
-    public String postRegister(User user) {
+    public String postRegister(@Validated User user, BindingResult res, Model model) {
+        if(res.hasErrors()) {
+            //エラーあり
+            return getRegister(user);
+        }
         // User登録
         service.saveUser(user);
         // 一覧画面にリダイレクト
         return "redirect:/user/list";
     }
+    //---------変更４：ここまで-------------
 
     // ----- 追加:ここから -----
     /** User更新画面を表示 */
     @GetMapping("/update/{id}/")
-    public String getUser(@PathVariable("id") Integer id, Model model) {
+    public String getUser(@PathVariable(name = "id", required = false) Integer id, Model model, User user) {
+        if(id != null) {
+            model.addAttribute("user", service.getUser(id));
+        }else {
         // Modelに登録
-        model.addAttribute("user", service.getUser(id));
+        model.addAttribute("user", user);
+        }
         // User更新画面に遷移
         return "user/update";
     }
 
     /** User更新処理 */
-    @PostMapping("/update/{id}/")
-    public String postUser(User user) {
+    @PostMapping("/update/{id}")
+    public String postUser(@Validated User user, BindingResult result, Model model) {
+        if(result.hasErrors()) {
+            //エラーあり
+            return getUser(null, model, user);
+        }
         // User登録
         service.saveUser(user);
         // 一覧画面にリダイレクト
         return "redirect:/user/list";
     }
+
     // ----- 追加:ここまで -----
 
     //-----追加３：ここから-------
