@@ -86,5 +86,9 @@ class UserControllerTest {
         assertEquals(3, userlist1.size());
         assertEquals(1, userlist1.get(0).getId());
         assertEquals("キラメキ太郎", userlist1.get(0).getName());
+        assertEquals(2, userlist1.get(1).getId());
+        assertEquals("キラメキ次郎", userlist1.get(1).getName());
+        assertEquals(3, userlist1.get(2).getId());
+        assertEquals("キラメキ花子", userlist1.get(2).getName());
     }
 }
